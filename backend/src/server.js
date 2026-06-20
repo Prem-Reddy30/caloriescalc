@@ -70,11 +70,12 @@ app.use('/api/admin', adminRoutes);
 // Health check endpoint
 app.get('/health', (req, res) => {
   const key = process.env.SUPABASE_ANON_KEY || '';
+  const url = process.env.SUPABASE_URL || '';
   res.status(200).json({ 
     status: 'OK', 
     message: 'NutriBudget AI API is running',
     debug: {
-      hasUrl: !!process.env.SUPABASE_URL,
+      url: url,
       keyLength: key.length,
       keyPrefix: key.substring(0, 15),
       keySuffix: key.substring(key.length - 4),

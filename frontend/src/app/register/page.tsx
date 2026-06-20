@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Apple, Mail, Lock, User, ArrowRight, AlertCircle, CheckCircle } from 'lucide-react';
 import { API_BASE_URL } from '@/lib/utils';
 import { auth, googleProvider } from '@/lib/firebase';
-import { signInWithPopup } from 'firebase/auth';
+import { signInWithPopup, signInWithRedirect, getRedirectResult } from 'firebase/auth';
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
@@ -67,11 +67,76 @@ export default function RegisterPage() {
         window.location.href = '/dashboard';
       }, 500);
 
-    } catch (err) {
-      setError('Cannot connect to server. Make sure the backend is running on port 5000.');
+    } catch (err: any) {
+      console.error('Connection error:', err);
+      setError(`Cannot connect to server at ${API_BASE_URL}. Make sure the backend is running.`);
       setLoading(false);
     }
   };
+
+  // Handle Firebase redirect result on mount (for mobile Google sign-in)
+  useEffect(() => {
+    const handleRedirectResult = async () => {
+      try {
+        const result = await getRedirectResult(auth);
+        if (result) {
+          setLoading(true);
+          const user = result.user;
+          if (!user.email) {
+            throw new Error('No email associated with this Google account.');
+          }
+
+          const res = await fetch(`${API_BASE_URL}/api/auth/google-login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              name: user.displayName || 'Google User',
+              email: user.email,
+              googleId: user.uid,
+              avatar: user.photoURL || null
+            })
+          });
+
+          const data = await res.json();
+
+          if (!res.ok) {
+            throw new Error(data.message || 'Server authentication failed.');
+          }
+
+          localStorage.setItem('token', data.token);
+          localStorage.setItem('user', JSON.stringify(data.user));
+
+          if (data.user.profile && data.user.profile.age) {
+            localStorage.setItem('onboarding', JSON.stringify({
+              completed: true,
+              name: data.user.name,
+              age: data.user.profile.age,
+              weight: data.user.profile.weight,
+              height: data.user.profile.height,
+              gender: data.user.profile.gender,
+              calorieGoal: data.user.profile.calorieGoal,
+              diet: data.user.profile.dietPreference
+            }));
+          } else {
+            localStorage.setItem('onboarding', JSON.stringify({ completed: false }));
+          }
+
+          setSuccess(`Account registered as ${user.email} successfully! Redirecting...`);
+          setLoading(false);
+
+          setTimeout(() => {
+            window.location.href = '/dashboard';
+          }, 500);
+        }
+      } catch (err: any) {
+        console.error('Google Redirect Error:', err);
+        setError(err.message || 'Google Authentication failed.');
+        setLoading(false);
+      }
+    };
+
+    handleRedirectResult();
+  }, []);
 
   const handleGoogleSignUp = async () => {
     setLoading(true);
@@ -79,6 +144,14 @@ export default function RegisterPage() {
     setSuccess('');
     
     try {
+      // Check if user is on mobile
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      
+      if (isMobile) {
+        await signInWithRedirect(auth, googleProvider);
+        return; // Redirect will handle the registration on reload
+      }
+
       const result = await signInWithPopup(auth, googleProvider);
       const user = result.user;
       

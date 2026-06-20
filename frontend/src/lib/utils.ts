@@ -1,7 +1,23 @@
 import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
 
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+export const getApiBaseUrl = () => {
+  const envUrl = process.env.NEXT_PUBLIC_API_URL;
+  if (envUrl && envUrl !== 'http://localhost:5000') {
+    return envUrl;
+  }
+  
+  if (typeof window !== 'undefined') {
+    const hostname = window.location.hostname;
+    if (hostname && hostname !== 'localhost' && hostname !== '127.0.0.1') {
+      return `${window.location.protocol}//${hostname}:5000`;
+    }
+  }
+  
+  return envUrl || 'http://localhost:5000';
+};
+
+export const API_BASE_URL = getApiBaseUrl();
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))

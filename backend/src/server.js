@@ -67,9 +67,21 @@ app.use('/api/payment', paymentRoutes);
 app.use('/api/email', emailRoutes);
 app.use('/api/admin', adminRoutes);
 
-// Health check
+// Health check endpoint
 app.get('/health', (req, res) => {
-  res.json({ status: 'OK', message: 'NutriBudget AI API is running' });
+  res.status(200).json({ 
+    status: 'OK', 
+    message: 'NutriBudget AI API is running',
+    debug: {
+      hasUrl: !!process.env.SUPABASE_URL,
+      urlStartsHttps: process.env.SUPABASE_URL ? process.env.SUPABASE_URL.startsWith('https') : false,
+      hasKey: !!process.env.SUPABASE_ANON_KEY,
+      keyLength: process.env.SUPABASE_ANON_KEY ? process.env.SUPABASE_ANON_KEY.length : 0,
+      keyStartsSb: process.env.SUPABASE_ANON_KEY ? process.env.SUPABASE_ANON_KEY.startsWith('sb_') : false,
+      hasJwtSecret: !!process.env.JWT_SECRET,
+      envKeys: Object.keys(process.env).filter(k => k.includes('SUPABASE') || k.includes('JWT'))
+    }
+  });
 });
 
 // Error handler

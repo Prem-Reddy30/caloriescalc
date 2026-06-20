@@ -3,14 +3,28 @@ import { twMerge } from "tailwind-merge"
 
 export const getApiBaseUrl = () => {
   const envUrl = process.env.NEXT_PUBLIC_API_URL;
-  if (envUrl && envUrl !== 'http://localhost:5000') {
+  if (envUrl && envUrl !== 'http://localhost:5000' && !envUrl.includes('localhost')) {
     return envUrl;
   }
   
   if (typeof window !== 'undefined') {
     const hostname = window.location.hostname;
-    if (hostname && hostname !== 'localhost' && hostname !== '127.0.0.1') {
-      return `${window.location.protocol}//${hostname}:5000`;
+    if (hostname) {
+      const isLocalIp = 
+        hostname === 'localhost' || 
+        hostname === '127.0.0.1' ||
+        /^192\.168\.\d{1,3}\.\d{1,3}$/.test(hostname) ||
+        /^10\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(hostname) ||
+        /^172\.(1[6-9]|2\d|3[0-1])\.\d{1,3}\.\d{1,3}$/.test(hostname);
+
+      if (isLocalIp) {
+        if (hostname !== 'localhost' && hostname !== '127.0.0.1') {
+          return `${window.location.protocol}//${hostname}:5000`;
+        }
+      } else {
+        // Fallback to active Render backend when deployed on Vercel
+        return 'https://caloriescalc-backend.onrender.com';
+      }
     }
   }
   

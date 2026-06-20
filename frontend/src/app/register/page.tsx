@@ -21,23 +21,6 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  const [serverStatus, setServerStatus] = useState<'checking' | 'ready' | 'slow'>('checking');
-
-  // Wake up Render backend on page load (free tier sleeps after 15 min)
-  useEffect(() => {
-    const wakeBackend = async () => {
-      try {
-        const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 10000);
-        await fetch(`${API_BASE_URL}/health`, { signal: controller.signal });
-        clearTimeout(timeout);
-        setServerStatus('ready');
-      } catch {
-        setServerStatus('slow');
-      }
-    };
-    wakeBackend();
-  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -57,7 +40,7 @@ export default function RegisterPage() {
     setLoading(true);
 
     try {
-      const res = await fetch(`${API_BASE_URL}/api/auth/register`, {
+      const res = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -86,12 +69,8 @@ export default function RegisterPage() {
 
     } catch (err: any) {
       console.error('Connection error:', err);
-      setError('Connection failed. The server is starting up (this takes ~30 seconds on first load). Please wait and try again.');
+      setError('Connection failed. Please try again.');
       setLoading(false);
-      setServerStatus('slow');
-      setTimeout(async () => {
-        try { await fetch(`${API_BASE_URL}/health`); setServerStatus('ready'); } catch {}
-      }, 5000);
     }
   };
 
@@ -107,7 +86,7 @@ export default function RegisterPage() {
             throw new Error('No email associated with this Google account.');
           }
 
-          const res = await fetch(`${API_BASE_URL}/api/auth/google-login`, {
+          const res = await fetch('/api/auth/google-login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -180,7 +159,7 @@ export default function RegisterPage() {
         throw new Error('No email associated with this Google account.');
       }
 
-      const res = await fetch(`${API_BASE_URL}/api/auth/google-login`, {
+      const res = await fetch('/api/auth/google-login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -243,22 +222,6 @@ export default function RegisterPage() {
           <CardDescription>Start your fitness journey with NutriBudget AI</CardDescription>
         </CardHeader>
         <CardContent>
-
-          {serverStatus === 'checking' && (
-            <div className="mb-4 flex items-center gap-2 rounded-md bg-blue-50 border border-blue-200 p-3 text-sm text-blue-700 dark:bg-blue-900/20 dark:border-blue-800 dark:text-blue-400">
-              <svg className="animate-spin h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
-              </svg>
-              <span>Connecting to server… (first load may take 30s)</span>
-            </div>
-          )}
-
-          {serverStatus === 'slow' && !error && (
-            <div className="mb-4 flex items-center gap-2 rounded-md bg-yellow-50 border border-yellow-200 p-3 text-sm text-yellow-700 dark:bg-yellow-900/20 dark:border-yellow-800 dark:text-yellow-400">
-              ⚠️ <span>Server is warming up. Please try again in a few seconds.</span>
-            </div>
-          )}
 
           {error && (
             <div className="mb-4 flex items-start gap-2 rounded-md bg-red-50 border border-red-200 p-3 text-sm text-red-700 dark:bg-red-900/20 dark:border-red-800 dark:text-red-400">

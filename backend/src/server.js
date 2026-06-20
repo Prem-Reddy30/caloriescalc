@@ -25,11 +25,13 @@ const app = express();
 
 // Explicit CORS — must be BEFORE helmet so error responses always include the header
 const corsOptions = {
-  origin: [
-    'https://caloriescalc-eight.vercel.app',
-    'http://localhost:3000',
-    'http://localhost:3001',
-  ],
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true);
+    if (origin.endsWith('.vercel.app') || origin.startsWith('http://localhost:')) {
+      return callback(null, true);
+    }
+    return callback(null, false); // Fail silently instead of crashing
+  },
   credentials: true,
   methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],

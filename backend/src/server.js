@@ -23,19 +23,33 @@ startDailySummaryCron();
 
 const app = express();
 
-// Middleware
+// Explicit CORS — must be BEFORE helmet so error responses always include the header
+const corsOptions = {
+  origin: [
+    'https://caloriescalc-eight.vercel.app',
+    'http://localhost:3000',
+    'http://localhost:3001',
+  ],
+  credentials: true,
+  methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  optionsSuccessStatus: 204,
+};
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions)); // Handle preflight for all routes
+
 app.use(helmet({
   crossOriginResourcePolicy: false,
-  crossOriginOpenerPolicy: false
+  crossOriginOpenerPolicy: false,
+  contentSecurityPolicy: false, // Disable CSP — not needed for an API server
 }));
-app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Rate limiting
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
+  max: 100,
 });
 app.use('/api/', limiter);
 

@@ -1,37 +1,9 @@
 import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
 
-export const getApiBaseUrl = () => {
-  const envUrl = process.env.NEXT_PUBLIC_API_URL;
-  if (envUrl && envUrl !== 'http://localhost:5000' && !envUrl.includes('localhost')) {
-    return envUrl;
-  }
-  
-  if (typeof window !== 'undefined') {
-    const hostname = window.location.hostname;
-    if (hostname) {
-      const isLocalIp = 
-        hostname === 'localhost' || 
-        hostname === '127.0.0.1' ||
-        /^192\.168\.\d{1,3}\.\d{1,3}$/.test(hostname) ||
-        /^10\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(hostname) ||
-        /^172\.(1[6-9]|2\d|3[0-1])\.\d{1,3}\.\d{1,3}$/.test(hostname);
-
-      if (isLocalIp) {
-        if (hostname !== 'localhost' && hostname !== '127.0.0.1') {
-          return `${window.location.protocol}//${hostname}:5000`;
-        }
-      } else {
-        // Fallback to active Render backend when deployed on Vercel
-        return 'https://caloriescalc-backend.onrender.com';
-      }
-    }
-  }
-  
-  return envUrl || 'http://localhost:5000';
-};
-
-export const API_BASE_URL = getApiBaseUrl();
+// Production: uses NEXT_PUBLIC_API_URL env var if set in Vercel dashboard
+// Fallback: points directly to the confirmed live Render backend
+export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://caloriescalc-backend.onrender.com';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))

@@ -69,7 +69,7 @@ export default function RegisterPage() {
 
     } catch (err: any) {
       console.error('Connection error:', err);
-      setError(`Cannot connect to server at ${API_BASE_URL}. Make sure the backend is running.`);
+      setError('Connection failed. The server may be starting up — please wait a moment and try again.');
       setLoading(false);
     }
   };

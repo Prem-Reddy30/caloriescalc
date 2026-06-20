@@ -4,7 +4,7 @@ const nextConfig = {
     domains: ['localhost'],
   },
   env: {
-    NEXT_PUBLIC_API_URL: 'https://caloriescalc-backend.onrender.com',
+    NEXT_PUBLIC_API_URL: 'https://caloriescalc.onrender.com',
   },
 }
 

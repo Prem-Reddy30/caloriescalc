@@ -40,7 +40,7 @@ export default function RegisterPage() {
     setLoading(true);
 
     try {
-      const BACKEND_URL = 'https://caloriescalc-backend.onrender.com';
+      const BACKEND_URL = 'https://caloriescalc.onrender.com';
       const res = await fetch(`${BACKEND_URL}/api/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -87,7 +87,7 @@ export default function RegisterPage() {
             throw new Error('No email associated with this Google account.');
           }
 
-          const BACKEND_URL = 'https://caloriescalc-backend.onrender.com';
+          const BACKEND_URL = 'https://caloriescalc.onrender.com';
           const res = await fetch(`${BACKEND_URL}/api/auth/google-login`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -161,7 +161,7 @@ export default function RegisterPage() {
         throw new Error('No email associated with this Google account.');
       }
 
-      const BACKEND_URL = 'https://caloriescalc-backend.onrender.com';
+      const BACKEND_URL = 'https://caloriescalc.onrender.com';
       const res = await fetch(`${BACKEND_URL}/api/auth/google-login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

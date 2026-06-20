@@ -3,7 +3,7 @@ import { twMerge } from "tailwind-merge"
 
 // Production: uses NEXT_PUBLIC_API_URL env var if set in Vercel dashboard
 // Fallback: points directly to the confirmed live Render backend
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://caloriescalc-backend.onrender.com';
+export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://caloriescalc.onrender.com';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))

@@ -55,7 +55,8 @@ router.post('/register', [
       .single();
 
     if (createError) {
-      throw new Error(createError.message);
+      console.error('Supabase createError:', createError);
+      return res.status(500).json({ message: createError.message, fullError: createError, location: 'supabase_insert' });
     }
 
     // Generate token

@@ -61,7 +61,7 @@ router.post('/register', [
 
     // Generate token
     const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
-      expiresIn: process.env.JWT_EXPIRE,
+      expiresIn: process.env.JWT_EXPIRE || '30d',
     });
 
     // Send Diet Plan Offer Email asynchronously
@@ -118,7 +118,7 @@ router.post('/login', [
 
     // Generate token
     const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
-      expiresIn: process.env.JWT_EXPIRE,
+      expiresIn: process.env.JWT_EXPIRE || '30d',
     });
 
     // Send Diet Plan Offer Email asynchronously
@@ -190,7 +190,7 @@ router.post('/google-login', async (req, res) => {
 
     // Generate token
     const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
-      expiresIn: process.env.JWT_EXPIRE,
+      expiresIn: process.env.JWT_EXPIRE || '30d',
     });
 
     // Log registration or login for Google

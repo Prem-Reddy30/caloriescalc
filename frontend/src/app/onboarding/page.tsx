@@ -12,6 +12,35 @@ const steps = [
   { id: 4, title: "Diet & budget",          icon: Utensils,  color: 'from-orange-500 to-amber-500' },
 ];
 
+const InputField = ({ label, type = 'text', placeholder, value, onChange }: any) => (
+  <div className="space-y-1.5">
+    <label className="text-xs font-medium text-gray-550 dark:text-gray-400 uppercase tracking-wide">{label}</label>
+    <input type={type} placeholder={placeholder} value={value} onChange={e => onChange(e.target.value)}
+      className="w-full px-4 py-3 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl text-gray-905 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 text-sm focus:outline-none focus:border-emerald-500/50 focus:bg-white dark:focus:bg-transparent transition-all" />
+  </div>
+);
+
+const SelectField = ({ label, options, value, onChange }: any) => (
+  <div className="space-y-1.5">
+    <label className="text-xs font-medium text-gray-550 dark:text-gray-400 uppercase tracking-wide">{label}</label>
+    <select value={value} onChange={e => onChange(e.target.value)}
+      className="w-full px-4 py-3 bg-gray-50 dark:bg-[#1a1a24] border border-gray-200 dark:border-white/10 rounded-xl text-gray-905 dark:text-white text-sm focus:outline-none focus:border-emerald-500/50 transition-all">
+      {options.map((o: any) => <option key={o.v} value={o.v} className="bg-white dark:bg-[#1a1a24] text-gray-900 dark:text-white">{o.l}</option>)}
+    </select>
+  </div>
+);
+
+const OptionCard = ({ label, value, current, onClick, emoji }: any) => (
+  <button onClick={() => onClick(value)}
+    className={`flex flex-col items-center gap-2 p-4 rounded-xl border text-center transition-all
+      ${current === value
+        ? 'bg-emerald-500/10 dark:bg-emerald-500/20 border-emerald-550 dark:border-emerald-500/40 text-emerald-600 dark:text-emerald-400'
+        : 'bg-white dark:bg-white/5 border-gray-200 dark:border-white/10 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-white/10'}`}>
+    <span className="text-2xl">{emoji}</span>
+    <span className="text-xs font-medium">{label}</span>
+  </button>
+);
+
 export default function OnboardingPage() {
   const router = useRouter();
   const [step, setStep] = useState(0);
@@ -79,34 +108,7 @@ export default function OnboardingPage() {
     router.push('/dashboard');
   };
 
-  const InputField = ({ label, k, type = 'text', placeholder }: any) => (
-    <div className="space-y-1.5">
-      <label className="text-xs font-medium text-gray-550 dark:text-gray-400 uppercase tracking-wide">{label}</label>
-      <input type={type} placeholder={placeholder} value={(data as any)[k]} onChange={e => set(k, e.target.value)}
-        className="w-full px-4 py-3 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl text-gray-905 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 text-sm focus:outline-none focus:border-emerald-500/50 focus:bg-white dark:focus:bg-transparent transition-all" />
-    </div>
-  );
 
-  const SelectField = ({ label, k, options }: any) => (
-    <div className="space-y-1.5">
-      <label className="text-xs font-medium text-gray-550 dark:text-gray-400 uppercase tracking-wide">{label}</label>
-      <select value={(data as any)[k]} onChange={e => set(k, e.target.value)}
-        className="w-full px-4 py-3 bg-gray-50 dark:bg-[#1a1a24] border border-gray-200 dark:border-white/10 rounded-xl text-gray-905 dark:text-white text-sm focus:outline-none focus:border-emerald-500/50 transition-all">
-        {options.map((o: any) => <option key={o.v} value={o.v} className="bg-white dark:bg-[#1a1a24] text-gray-900 dark:text-white">{o.l}</option>)}
-      </select>
-    </div>
-  );
-
-  const OptionCard = ({ label, value, current, onClick, emoji }: any) => (
-    <button onClick={() => onClick(value)}
-      className={`flex flex-col items-center gap-2 p-4 rounded-xl border text-center transition-all
-        ${current === value
-          ? 'bg-emerald-500/10 dark:bg-emerald-500/20 border-emerald-550 dark:border-emerald-500/40 text-emerald-600 dark:text-emerald-400'
-          : 'bg-white dark:bg-white/5 border-gray-200 dark:border-white/10 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-white/10'}`}>
-      <span className="text-2xl">{emoji}</span>
-      <span className="text-xs font-medium">{label}</span>
-    </button>
-  );
 
   const cur = steps[step];
   const pct = ((step + 1) / steps.length) * 100;
@@ -145,8 +147,8 @@ export default function OnboardingPage() {
           {/* Step 0: Name */}
           {step === 0 && (
             <div className="space-y-4">
-              <InputField label="Full Name" k="name" placeholder="e.g. Rahul Sharma" />
-              <SelectField label="Gender" k="gender" options={[{ v: 'male', l: 'Male' }, { v: 'female', l: 'Female' }]} />
+              <InputField label="Full Name" value={data.name} onChange={(v: string) => set('name', v)} placeholder="e.g. Rahul Sharma" />
+              <SelectField label="Gender" value={data.gender} onChange={(v: string) => set('gender', v)} options={[{ v: 'male', l: 'Male' }, { v: 'female', l: 'Female' }]} />
             </div>
           )}
 
@@ -154,13 +156,13 @@ export default function OnboardingPage() {
           {step === 1 && (
             <div className="grid grid-cols-3 gap-3">
               <div className="col-span-1">
-                <InputField label="Age" k="age" type="number" placeholder="22" />
+                <InputField label="Age" value={data.age} onChange={(v: string) => set('age', v)} type="number" placeholder="22" />
               </div>
               <div className="col-span-1">
-                <InputField label="Weight (kg)" k="weight" type="number" placeholder="65" />
+                <InputField label="Weight (kg)" value={data.weight} onChange={(v: string) => set('weight', v)} type="number" placeholder="65" />
               </div>
               <div className="col-span-1">
-                <InputField label="Height (cm)" k="height" type="number" placeholder="170" />
+                <InputField label="Height (cm)" value={data.height} onChange={(v: string) => set('height', v)} type="number" placeholder="170" />
               </div>
             </div>
           )}
@@ -186,7 +188,7 @@ export default function OnboardingPage() {
                   <OptionCard label="Vegan"          value="vegan"          current={data.diet} onClick={(v: string) => set('diet', v)} emoji="🌱" />
                 </div>
               </div>
-              <InputField label="Daily Food Budget (₹)" k="budget" type="number" placeholder="200" />
+              <InputField label="Daily Food Budget (₹)" value={data.budget} onChange={(v: string) => set('budget', v)} type="number" placeholder="200" />
             </div>
           )}
 

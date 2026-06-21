@@ -9,7 +9,7 @@ const steps = [
   { id: 1, title: "What's your name?",     icon: User,      color: 'from-emerald-500 to-green-500' },
   { id: 2, title: "Your body stats",        icon: Target,    color: 'from-blue-500 to-cyan-500' },
   { id: 3, title: "Your fitness goal",      icon: Target,    color: 'from-violet-500 to-purple-500' },
-  { id: 4, title: "Diet & budget",          icon: Utensils,  color: 'from-orange-500 to-amber-500' },
+  { id: 4, title: "Diet",                   icon: Utensils,  color: 'from-orange-500 to-amber-500' },
 ];
 
 const InputField = ({ label, type = 'text', placeholder, value, onChange }: any) => (
@@ -188,7 +188,6 @@ export default function OnboardingPage() {
                   <OptionCard label="Vegan"          value="vegan"          current={data.diet} onClick={(v: string) => set('diet', v)} emoji="🌱" />
                 </div>
               </div>
-              <InputField label="Daily Food Budget (₹)" value={data.budget} onChange={(v: string) => set('budget', v)} type="number" placeholder="200" />
             </div>
           )}
 

@@ -21,7 +21,6 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  const [isWakingUp, setIsWakingUp] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,12 +38,6 @@ export default function RegisterPage() {
     }
 
     setLoading(true);
-    setIsWakingUp(false);
-    
-    // If it takes more than 3 seconds, the server is probably waking up
-    const wakeUpTimer = setTimeout(() => {
-      setIsWakingUp(true);
-    }, 3000);
 
     try {
       const BACKEND_URL = 'https://caloriescalc.onrender.com';
@@ -59,8 +52,6 @@ export default function RegisterPage() {
       });
 
       const data = await res.json();
-      clearTimeout(wakeUpTimer);
-      setIsWakingUp(false);
 
       if (!res.ok) {
         const msg = data.errors?.[0]?.msg || data.message || 'Registration failed.';
@@ -78,8 +69,6 @@ export default function RegisterPage() {
       }, 500);
 
     } catch (err: any) {
-      clearTimeout(wakeUpTimer);
-      setIsWakingUp(false);
       console.error('Connection error:', err);
       setError('Connection failed. Please try again.');
       setLoading(false);
@@ -244,15 +233,7 @@ export default function RegisterPage() {
             </div>
           )}
 
-          {isWakingUp && !error && !success && (
-            <div className="mb-4 flex items-center gap-2 rounded-md bg-blue-50 border border-blue-200 p-3 text-sm text-blue-700 dark:bg-blue-900/20 dark:border-blue-800 dark:text-blue-400">
-              <svg className="animate-spin h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
-              </svg>
-              <span>Waking up free server (takes ~40s). Please wait...</span>
-            </div>
-          )}
+
 
           {success && (
             <div className="mb-4 flex items-center gap-2 rounded-md bg-green-50 border border-green-200 p-3 text-sm text-green-700">

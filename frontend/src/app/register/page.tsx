@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Apple, Mail, Lock, User, ArrowRight, AlertCircle, CheckCircle } from 'lucide-react';
-import { API_BASE_URL } from '@/lib/utils';
+import { API_BASE_URL, clearAllSessionData } from '@/lib/utils';
 import { auth, googleProvider } from '@/lib/firebase';
 import { signInWithRedirect, getRedirectResult, signOut } from 'firebase/auth';
 
@@ -61,12 +61,7 @@ export default function RegisterPage() {
       }
 
       // Clear ALL old session data so the new user starts fresh
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      localStorage.removeItem('onboarding');
-      localStorage.removeItem('notifications');
-      localStorage.removeItem('last_diet_offer_time');
-      localStorage.removeItem('avatar');
+      clearAllSessionData();
 
       // Sign out any lingering Firebase session so it doesn't auto-login as old user
       try { await signOut(auth); } catch {}

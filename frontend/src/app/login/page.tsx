@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Apple, Mail, Lock, ArrowRight, AlertCircle, CheckCircle } from 'lucide-react';
-import { API_BASE_URL } from '@/lib/utils';
+import { API_BASE_URL, clearAllSessionData } from '@/lib/utils';
 import { auth, googleProvider } from '@/lib/firebase';
 import { signInWithRedirect, getRedirectResult, signOut } from 'firebase/auth';
 
@@ -49,12 +49,7 @@ export default function LoginPage() {
       }
 
       // Clear ALL old session data from previous accounts
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      localStorage.removeItem('onboarding');
-      localStorage.removeItem('notifications');
-      localStorage.removeItem('last_diet_offer_time');
-      localStorage.removeItem('avatar');
+      clearAllSessionData();
 
       // Save auth data
       localStorage.setItem('token', data.token);
@@ -93,12 +88,7 @@ export default function LoginPage() {
           }
 
           // Clear ALL old session data first
-          localStorage.removeItem('token');
-          localStorage.removeItem('user');
-          localStorage.removeItem('onboarding');
-          localStorage.removeItem('notifications');
-          localStorage.removeItem('last_diet_offer_time');
-          localStorage.removeItem('avatar');
+          clearAllSessionData();
 
           const BACKEND_URL = 'https://caloriescalc.onrender.com';
           const res = await fetch(`${BACKEND_URL}/api/auth/google-login`, {

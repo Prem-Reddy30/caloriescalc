@@ -11,6 +11,8 @@ import {
 import { auth } from '@/lib/firebase';
 import { signOut } from 'firebase/auth';
 
+import { clearAllSessionData } from '@/lib/utils';
+
 const navItems = [
   { label: 'Dashboard',       icon: LayoutDashboard, href: '/dashboard' },
   { label: 'Calories',        icon: Flame,           href: '/dashboard/calories' },
@@ -50,15 +52,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       const u = JSON.parse(localStorage.getItem('user') || '{}');
       if (!u || !u.name) {
         // Invalid user data — force re-login
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
+        clearAllSessionData();
         window.location.href = '/login';
         return;
       }
       setUserName(u.name.split(' ')[0] || 'User');
     } catch {
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
+      clearAllSessionData();
       window.location.href = '/login';
       return;
     }
@@ -181,12 +181,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   const handleLogout = async () => {
     // Clear all session data
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    localStorage.removeItem('onboarding');
-    localStorage.removeItem('notifications');
-    localStorage.removeItem('last_diet_offer_time');
-    localStorage.removeItem('avatar');
+    clearAllSessionData();
     localStorage.removeItem('waterNotif');
     // Sign out Firebase to prevent stale Google sessions
     try { await signOut(auth); } catch {}

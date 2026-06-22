@@ -60,19 +60,16 @@ export default function RegisterPage() {
         return;
       }
 
-      // Clear any old session data from previous accounts
+      // Clear any old session data
       localStorage.removeItem('token');
       localStorage.removeItem('user');
       localStorage.removeItem('onboarding');
 
-      localStorage.setItem('token', data.token);
-      localStorage.setItem('user', JSON.stringify(data.user));
-      localStorage.setItem('onboarding', JSON.stringify({ completed: false }));
-
-      setSuccess('Account created! Setting up your profile...');
+      setSuccess('Account created successfully! Please sign in now.');
+      setLoading(false);
       setTimeout(() => {
-        window.location.href = '/onboarding';
-      }, 500);
+        window.location.href = '/login';
+      }, 1500);
 
     } catch (err: any) {
       console.error('Connection error:', err);

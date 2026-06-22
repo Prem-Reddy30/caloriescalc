@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Apple, ArrowRight, ArrowLeft, CheckCircle, User, Target, Utensils, Wallet } from 'lucide-react';
 import { API_BASE_URL, calculateBMR, calculateTDEE, calculateCalorieGoal } from '@/lib/utils';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 const steps = [
   { id: 1, title: "What's your name?",     icon: User,      color: 'from-emerald-500 to-green-500' },
@@ -101,6 +103,7 @@ export default function OnboardingPage() {
 
 
   const cur = steps[step];
+  const Icon = cur.icon;
   const pct = ((step + 1) / steps.length) * 100;
 
   return (
@@ -129,7 +132,7 @@ export default function OnboardingPage() {
         <div className="bg-white dark:bg-[#13131a] border border-gray-200 dark:border-white/10 rounded-2xl p-6 space-y-6 shadow-xl dark:shadow-none">
           <div className="flex items-center gap-3">
             <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${cur.color} flex items-center justify-center shadow-md shadow-emerald-500/10`}>
-              <cur.icon className="h-5 w-5 text-white" />
+              <Icon className="h-5 w-5 text-white" />
             </div>
             <h2 className="text-lg font-bold text-gray-900 dark:text-white">{cur.title}</h2>
           </div>
@@ -138,14 +141,14 @@ export default function OnboardingPage() {
           {step === 0 && (
             <div className="space-y-4">
               <div className="space-y-1.5">
-                <label className="text-xs font-medium text-gray-550 dark:text-gray-400 uppercase tracking-wide">Full Name</label>
-                <input type="text" placeholder="e.g. Rahul Sharma" value={data.name} onChange={e => set('name', e.target.value)}
-                  className="w-full px-4 py-3 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl text-gray-905 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 text-sm focus:outline-none focus:border-emerald-500/50 focus:bg-white dark:focus:bg-transparent transition-all" />
+                <Label htmlFor="name" className="text-xs font-medium text-gray-550 dark:text-gray-400 uppercase tracking-wide">Full Name</Label>
+                <Input id="name" name="name" type="text" placeholder="e.g. Rahul Sharma" value={data.name} onChange={e => set('name', e.target.value)}
+                  className="w-full px-4 py-3 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 text-sm focus:outline-none focus:border-emerald-500/50 focus:bg-white dark:focus:bg-transparent transition-all" />
               </div>
               <div className="space-y-1.5">
-                <label className="text-xs font-medium text-gray-550 dark:text-gray-400 uppercase tracking-wide">Gender</label>
-                <select value={data.gender} onChange={e => set('gender', e.target.value)}
-                  className="w-full px-4 py-3 bg-gray-50 dark:bg-[#1a1a24] border border-gray-200 dark:border-white/10 rounded-xl text-gray-905 dark:text-white text-sm focus:outline-none focus:border-emerald-500/50 transition-all">
+                <Label htmlFor="gender" className="text-xs font-medium text-gray-550 dark:text-gray-400 uppercase tracking-wide">Gender</Label>
+                <select id="gender" name="gender" value={data.gender} onChange={e => set('gender', e.target.value)}
+                  className="w-full px-4 py-3 bg-gray-50 dark:bg-[#1a1a24] border border-gray-200 dark:border-white/10 rounded-xl text-gray-900 dark:text-white text-sm focus:outline-none focus:border-emerald-500/50 transition-all">
                   <option value="male" className="bg-white dark:bg-[#1a1a24] text-gray-900 dark:text-white">Male</option>
                   <option value="female" className="bg-white dark:bg-[#1a1a24] text-gray-900 dark:text-white">Female</option>
                 </select>
@@ -157,19 +160,19 @@ export default function OnboardingPage() {
           {step === 1 && (
             <div className="grid grid-cols-3 gap-3">
               <div className="col-span-1 space-y-1.5">
-                <label className="text-xs font-medium text-gray-550 dark:text-gray-400 uppercase tracking-wide">Age</label>
-                <input type="number" placeholder="22" value={data.age} onChange={e => set('age', e.target.value)}
-                  className="w-full px-4 py-3 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl text-gray-905 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 text-sm focus:outline-none focus:border-emerald-500/50 focus:bg-white dark:focus:bg-transparent transition-all" />
+                <Label htmlFor="age" className="text-xs font-medium text-gray-550 dark:text-gray-400 uppercase tracking-wide">Age</Label>
+                <Input id="age" name="age" type="number" placeholder="22" value={data.age} onChange={e => set('age', e.target.value)}
+                  className="w-full px-4 py-3 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 text-sm focus:outline-none focus:border-emerald-500/50 focus:bg-white dark:focus:bg-transparent transition-all" />
               </div>
               <div className="col-span-1 space-y-1.5">
-                <label className="text-xs font-medium text-gray-550 dark:text-gray-400 uppercase tracking-wide">Weight (kg)</label>
-                <input type="number" placeholder="65" value={data.weight} onChange={e => set('weight', e.target.value)}
-                  className="w-full px-4 py-3 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl text-gray-905 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 text-sm focus:outline-none focus:border-emerald-500/50 focus:bg-white dark:focus:bg-transparent transition-all" />
+                <Label htmlFor="weight" className="text-xs font-medium text-gray-550 dark:text-gray-400 uppercase tracking-wide">Weight (kg)</Label>
+                <Input id="weight" name="weight" type="number" placeholder="65" value={data.weight} onChange={e => set('weight', e.target.value)}
+                  className="w-full px-4 py-3 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 text-sm focus:outline-none focus:border-emerald-500/50 focus:bg-white dark:focus:bg-transparent transition-all" />
               </div>
               <div className="col-span-1 space-y-1.5">
-                <label className="text-xs font-medium text-gray-550 dark:text-gray-400 uppercase tracking-wide">Height (cm)</label>
-                <input type="number" placeholder="170" value={data.height} onChange={e => set('height', e.target.value)}
-                  className="w-full px-4 py-3 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl text-gray-905 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 text-sm focus:outline-none focus:border-emerald-500/50 focus:bg-white dark:focus:bg-transparent transition-all" />
+                <Label htmlFor="height" className="text-xs font-medium text-gray-550 dark:text-gray-400 uppercase tracking-wide">Height (cm)</Label>
+                <Input id="height" name="height" type="number" placeholder="170" value={data.height} onChange={e => set('height', e.target.value)}
+                  className="w-full px-4 py-3 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 text-sm focus:outline-none focus:border-emerald-500/50 focus:bg-white dark:focus:bg-transparent transition-all" />
               </div>
             </div>
           )}

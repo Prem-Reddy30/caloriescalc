@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Apple, Mail, Lock, ArrowRight, AlertCircle, CheckCircle } from 'lucide-react';
 import { API_BASE_URL } from '@/lib/utils';
 import { auth, googleProvider } from '@/lib/firebase';
-import { signInWithRedirect, getRedirectResult } from 'firebase/auth';
+import { signInWithRedirect, getRedirectResult, signOut } from 'firebase/auth';
 
 export default function LoginPage() {
   const [formData, setFormData] = useState({ email: '', password: '' });
@@ -48,10 +48,13 @@ export default function LoginPage() {
         return;
       }
 
-      // Clear any old session data from previous accounts
+      // Clear ALL old session data from previous accounts
       localStorage.removeItem('token');
       localStorage.removeItem('user');
       localStorage.removeItem('onboarding');
+      localStorage.removeItem('notifications');
+      localStorage.removeItem('last_diet_offer_time');
+      localStorage.removeItem('avatar');
 
       // Save auth data
       localStorage.setItem('token', data.token);
@@ -75,13 +78,27 @@ export default function LoginPage() {
   useEffect(() => {
     const handleRedirectResult = async () => {
       try {
+        // Check if this redirect was initiated from this page
+        const pendingGoogleSignIn = sessionStorage.getItem('pendingGoogleSignIn');
+
         const result = await getRedirectResult(auth);
-        if (result) {
+        if (result && pendingGoogleSignIn === 'true') {
+          // Clear the flag
+          sessionStorage.removeItem('pendingGoogleSignIn');
+
           setLoading(true);
           const user = result.user;
           if (!user.email) {
             throw new Error('No email associated with this Google account.');
           }
+
+          // Clear ALL old session data first
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+          localStorage.removeItem('onboarding');
+          localStorage.removeItem('notifications');
+          localStorage.removeItem('last_diet_offer_time');
+          localStorage.removeItem('avatar');
 
           const BACKEND_URL = 'https://caloriescalc.onrender.com';
           const res = await fetch(`${BACKEND_URL}/api/auth/google-login`, {
@@ -100,11 +117,6 @@ export default function LoginPage() {
           if (!res.ok) {
             throw new Error(data.message || 'Server authentication failed.');
           }
-
-          // Clear any old session data from previous accounts
-          localStorage.removeItem('token');
-          localStorage.removeItem('user');
-          localStorage.removeItem('onboarding');
 
           localStorage.setItem('token', data.token);
           localStorage.setItem('user', JSON.stringify(data.user));
@@ -130,6 +142,9 @@ export default function LoginPage() {
           setTimeout(() => {
             window.location.href = '/dashboard';
           }, 500);
+        } else if (result) {
+          // Stale Firebase redirect result — sign out to prevent auto-login
+          await signOut(auth);
         }
       } catch (err: any) {
         console.error('Google Redirect Error:', err);
@@ -146,11 +161,22 @@ export default function LoginPage() {
     setError('');
     setSuccess('');
     
+    // Clear ALL old session data before starting Google sign-in
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    localStorage.removeItem('onboarding');
+    localStorage.removeItem('notifications');
+    localStorage.removeItem('last_diet_offer_time');
+    localStorage.removeItem('avatar');
+
     try {
+      // Mark that we intentionally initiated Google sign-in from this page
+      sessionStorage.setItem('pendingGoogleSignIn', 'true');
       // Always use redirect — works on mobile, desktop, and avoids popup-blocked errors
       await signInWithRedirect(auth, googleProvider);
     } catch (err: any) {
       console.error('Google Sign In Error:', err);
+      sessionStorage.removeItem('pendingGoogleSignIn');
       if (err.code === 'auth/configuration-not-found') {
         setError('Google Sign-In is not enabled in your Firebase Console. To fix this: Go to Firebase Console > Build > Authentication > Sign-in Method, click "Add new provider", select "Google", configure your support email, and click Save.');
       } else {

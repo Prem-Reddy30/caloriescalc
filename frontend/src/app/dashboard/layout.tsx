@@ -8,6 +8,8 @@ import {
   Dumbbell, Droplets, BarChart2, Settings, LogOut,
   ChevronLeft, Menu, X, Sun, Moon, Bell, BellOff
 } from 'lucide-react';
+import { auth } from '@/lib/firebase';
+import { signOut } from 'firebase/auth';
 
 const navItems = [
   { label: 'Dashboard',       icon: LayoutDashboard, href: '/dashboard' },
@@ -35,12 +37,32 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const [notifDropdownOpen, setNotifDropdownOpen] = useState(false);
   const notifRef = useRef<HTMLDivElement>(null);
 
-  // ── Load preferences ──
+  // ── Auth guard + Load preferences ──
   useEffect(() => {
+    // Check if user is authenticated
+    const token = localStorage.getItem('token');
+    if (!token) {
+      window.location.href = '/login';
+      return;
+    }
+
     try {
       const u = JSON.parse(localStorage.getItem('user') || '{}');
-      setUserName(u?.name?.split(' ')[0] || 'User');
-    } catch {}
+      if (!u || !u.name) {
+        // Invalid user data — force re-login
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        window.location.href = '/login';
+        return;
+      }
+      setUserName(u.name.split(' ')[0] || 'User');
+    } catch {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      window.location.href = '/login';
+      return;
+    }
+
     const savedTheme = localStorage.getItem('theme') as 'dark' | 'light';
     if (savedTheme) setTheme(savedTheme);
     const savedAvatar = localStorage.getItem('avatar');
@@ -157,9 +179,17 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     showToast(!waterNotif ? '💧 Water reminders enabled (every 2 hrs)' : '🔕 Water reminders disabled');
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    // Clear all session data
     localStorage.removeItem('token');
     localStorage.removeItem('user');
+    localStorage.removeItem('onboarding');
+    localStorage.removeItem('notifications');
+    localStorage.removeItem('last_diet_offer_time');
+    localStorage.removeItem('avatar');
+    localStorage.removeItem('waterNotif');
+    // Sign out Firebase to prevent stale Google sessions
+    try { await signOut(auth); } catch {}
     window.location.href = '/login';
   };
 

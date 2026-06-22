@@ -59,10 +59,7 @@ router.post('/register', [
       return res.status(500).json({ message: createError.message, fullError: createError, location: 'supabase_insert' });
     }
 
-    // Generate token
-    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
-      expiresIn: process.env.JWT_EXPIRE || '30d',
-    });
+    // (Token is not generated here — user must sign in via /login)
 
     // Send Diet Plan Offer Email asynchronously
     sendEmail({
@@ -74,10 +71,10 @@ router.post('/register', [
     // Log registration
     await logActivity(user.id, 'user_registered', { method: 'email' });
 
+    // Don't return a token — user must explicitly sign in after registration
     res.status(201).json({
       success: true,
-      token,
-      user: mapProfileToMongoUser(user),
+      message: 'Account created successfully. Please sign in.',
     });
   } catch (error) {
     res.status(500).json({ message: error.message });

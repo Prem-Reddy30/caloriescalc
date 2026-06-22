@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Apple, ArrowRight, ArrowLeft, CheckCircle, User, Target, Utensils, Wallet } from 'lucide-react';
 import { API_BASE_URL, calculateBMR, calculateTDEE, calculateCalorieGoal } from '@/lib/utils';
@@ -33,19 +33,25 @@ export default function OnboardingPage() {
     goal: 'maintenance', diet: 'vegetarian', budget: '200',
   });
 
-  useState(() => {
-    if (typeof window !== 'undefined') {
-      const savedTheme = localStorage.getItem('theme') as 'dark' | 'light';
-      if (savedTheme) {
-        document.documentElement.setAttribute('data-theme', savedTheme);
-        if (savedTheme === 'dark') {
-          document.documentElement.classList.add('dark');
-        } else {
-          document.documentElement.classList.remove('dark');
-        }
+  // Auth guard + theme init
+  useEffect(() => {
+    // Check if user is authenticated
+    const token = localStorage.getItem('token');
+    if (!token) {
+      window.location.href = '/login';
+      return;
+    }
+
+    const savedTheme = localStorage.getItem('theme') as 'dark' | 'light';
+    if (savedTheme) {
+      document.documentElement.setAttribute('data-theme', savedTheme);
+      if (savedTheme === 'dark') {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
       }
     }
-  });
+  }, []);
 
   const set = (k: string, v: string) => setData(d => ({ ...d, [k]: v }));
 

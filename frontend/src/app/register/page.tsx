@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Apple, Mail, Lock, User, ArrowRight, AlertCircle, CheckCircle } from 'lucide-react';
 import { API_BASE_URL } from '@/lib/utils';
 import { auth, googleProvider } from '@/lib/firebase';
-import { signInWithPopup, signInWithRedirect, getRedirectResult } from 'firebase/auth';
+import { signInWithRedirect, getRedirectResult } from 'firebase/auth';
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
@@ -146,68 +146,13 @@ export default function RegisterPage() {
     setSuccess('');
     
     try {
-      // Check if user is on mobile
-      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-      
-      if (isMobile) {
-        await signInWithRedirect(auth, googleProvider);
-        return; // Redirect will handle the registration on reload
-      }
-
-      const result = await signInWithPopup(auth, googleProvider);
-      const user = result.user;
-      
-      if (!user.email) {
-        throw new Error('No email associated with this Google account.');
-      }
-
-      const BACKEND_URL = 'https://caloriescalc.onrender.com';
-      const res = await fetch(`${BACKEND_URL}/api/auth/google-login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: user.displayName || 'Google User',
-          email: user.email,
-          googleId: user.uid,
-          avatar: user.photoURL || null
-        })
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.message || 'Server authentication failed.');
-      }
-
-      localStorage.setItem('token', data.token);
-      localStorage.setItem('user', JSON.stringify(data.user));
-
-      if (data.user.profile && data.user.profile.age) {
-        localStorage.setItem('onboarding', JSON.stringify({
-          completed: true,
-          name: data.user.name,
-          age: data.user.profile.age,
-          weight: data.user.profile.weight,
-          height: data.user.profile.height,
-          gender: data.user.profile.gender,
-          calorieGoal: data.user.profile.calorieGoal,
-          diet: data.user.profile.dietPreference
-        }));
-      } else {
-        localStorage.setItem('onboarding', JSON.stringify({ completed: false }));
-      }
-
-      setSuccess(`Account registered as ${user.email} successfully! Redirecting...`);
-      setLoading(false);
-      
-      setTimeout(() => {
-        window.location.href = '/dashboard';
-      }, 500);
+      // Always use redirect — works on mobile, desktop, and avoids popup-blocked errors
+      await signInWithRedirect(auth, googleProvider);
     } catch (err: any) {
       console.error('Google Sign Up Error:', err);
       if (err.code === 'auth/configuration-not-found') {
         setError('Google Sign-In is not enabled in your Firebase Console. To fix this: Go to Firebase Console > Build > Authentication > Sign-in Method, click "Add new provider", select "Google", configure your support email, and click Save.');
-      } else if (err.code !== 'auth/popup-closed-by-user') {
+      } else {
         setError(err.message || 'Google Registration failed.');
       }
       setLoading(false);

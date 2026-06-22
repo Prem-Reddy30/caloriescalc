@@ -12,23 +12,7 @@ const steps = [
   { id: 4, title: "Diet",                   icon: Utensils,  color: 'from-orange-500 to-amber-500' },
 ];
 
-const InputField = ({ label, type = 'text', placeholder, value, onChange }: any) => (
-  <div className="space-y-1.5">
-    <label className="text-xs font-medium text-gray-550 dark:text-gray-400 uppercase tracking-wide">{label}</label>
-    <input type={type} placeholder={placeholder} value={value} onChange={e => onChange(e.target.value)}
-      className="w-full px-4 py-3 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl text-gray-905 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 text-sm focus:outline-none focus:border-emerald-500/50 focus:bg-white dark:focus:bg-transparent transition-all" />
-  </div>
-);
 
-const SelectField = ({ label, options, value, onChange }: any) => (
-  <div className="space-y-1.5">
-    <label className="text-xs font-medium text-gray-550 dark:text-gray-400 uppercase tracking-wide">{label}</label>
-    <select value={value} onChange={e => onChange(e.target.value)}
-      className="w-full px-4 py-3 bg-gray-50 dark:bg-[#1a1a24] border border-gray-200 dark:border-white/10 rounded-xl text-gray-905 dark:text-white text-sm focus:outline-none focus:border-emerald-500/50 transition-all">
-      {options.map((o: any) => <option key={o.v} value={o.v} className="bg-white dark:bg-[#1a1a24] text-gray-900 dark:text-white">{o.l}</option>)}
-    </select>
-  </div>
-);
 
 const OptionCard = ({ label, value, current, onClick, emoji }: any) => (
   <button onClick={() => onClick(value)}
@@ -147,22 +131,39 @@ export default function OnboardingPage() {
           {/* Step 0: Name */}
           {step === 0 && (
             <div className="space-y-4">
-              <InputField label="Full Name" value={data.name} onChange={(v: string) => set('name', v)} placeholder="e.g. Rahul Sharma" />
-              <SelectField label="Gender" value={data.gender} onChange={(v: string) => set('gender', v)} options={[{ v: 'male', l: 'Male' }, { v: 'female', l: 'Female' }]} />
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-gray-550 dark:text-gray-400 uppercase tracking-wide">Full Name</label>
+                <input type="text" placeholder="e.g. Rahul Sharma" value={data.name} onChange={e => set('name', e.target.value)}
+                  className="w-full px-4 py-3 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl text-gray-905 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 text-sm focus:outline-none focus:border-emerald-500/50 focus:bg-white dark:focus:bg-transparent transition-all" />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-gray-550 dark:text-gray-400 uppercase tracking-wide">Gender</label>
+                <select value={data.gender} onChange={e => set('gender', e.target.value)}
+                  className="w-full px-4 py-3 bg-gray-50 dark:bg-[#1a1a24] border border-gray-200 dark:border-white/10 rounded-xl text-gray-905 dark:text-white text-sm focus:outline-none focus:border-emerald-500/50 transition-all">
+                  <option value="male" className="bg-white dark:bg-[#1a1a24] text-gray-900 dark:text-white">Male</option>
+                  <option value="female" className="bg-white dark:bg-[#1a1a24] text-gray-900 dark:text-white">Female</option>
+                </select>
+              </div>
             </div>
           )}
 
           {/* Step 1: Body stats */}
           {step === 1 && (
             <div className="grid grid-cols-3 gap-3">
-              <div className="col-span-1">
-                <InputField label="Age" value={data.age} onChange={(v: string) => set('age', v)} type="number" placeholder="22" />
+              <div className="col-span-1 space-y-1.5">
+                <label className="text-xs font-medium text-gray-550 dark:text-gray-400 uppercase tracking-wide">Age</label>
+                <input type="number" placeholder="22" value={data.age} onChange={e => set('age', e.target.value)}
+                  className="w-full px-4 py-3 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl text-gray-905 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 text-sm focus:outline-none focus:border-emerald-500/50 focus:bg-white dark:focus:bg-transparent transition-all" />
               </div>
-              <div className="col-span-1">
-                <InputField label="Weight (kg)" value={data.weight} onChange={(v: string) => set('weight', v)} type="number" placeholder="65" />
+              <div className="col-span-1 space-y-1.5">
+                <label className="text-xs font-medium text-gray-550 dark:text-gray-400 uppercase tracking-wide">Weight (kg)</label>
+                <input type="number" placeholder="65" value={data.weight} onChange={e => set('weight', e.target.value)}
+                  className="w-full px-4 py-3 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl text-gray-905 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 text-sm focus:outline-none focus:border-emerald-500/50 focus:bg-white dark:focus:bg-transparent transition-all" />
               </div>
-              <div className="col-span-1">
-                <InputField label="Height (cm)" value={data.height} onChange={(v: string) => set('height', v)} type="number" placeholder="170" />
+              <div className="col-span-1 space-y-1.5">
+                <label className="text-xs font-medium text-gray-550 dark:text-gray-400 uppercase tracking-wide">Height (cm)</label>
+                <input type="number" placeholder="170" value={data.height} onChange={e => set('height', e.target.value)}
+                  className="w-full px-4 py-3 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl text-gray-905 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 text-sm focus:outline-none focus:border-emerald-500/50 focus:bg-white dark:focus:bg-transparent transition-all" />
               </div>
             </div>
           )}

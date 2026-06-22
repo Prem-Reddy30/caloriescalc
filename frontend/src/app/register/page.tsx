@@ -60,12 +60,18 @@ export default function RegisterPage() {
         return;
       }
 
+      // Clear any old session data from previous accounts
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      localStorage.removeItem('onboarding');
+
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.user));
+      localStorage.setItem('onboarding', JSON.stringify({ completed: false }));
 
-      setSuccess('Account created! Redirecting to dashboard...');
+      setSuccess('Account created! Setting up your profile...');
       setTimeout(() => {
-        window.location.href = '/dashboard';
+        window.location.href = '/onboarding';
       }, 500);
 
     } catch (err: any) {
@@ -105,6 +111,11 @@ export default function RegisterPage() {
             throw new Error(data.message || 'Server authentication failed.');
           }
 
+          // Clear any old session data from previous accounts
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+          localStorage.removeItem('onboarding');
+
           localStorage.setItem('token', data.token);
           localStorage.setItem('user', JSON.stringify(data.user));
 
@@ -119,16 +130,18 @@ export default function RegisterPage() {
               calorieGoal: data.user.profile.calorieGoal,
               diet: data.user.profile.dietPreference
             }));
+            setSuccess(`Signed in as ${user.email}! Redirecting...`);
+            setTimeout(() => {
+              window.location.href = '/dashboard';
+            }, 500);
           } else {
             localStorage.setItem('onboarding', JSON.stringify({ completed: false }));
+            setSuccess(`Account created as ${user.email}! Setting up your profile...`);
+            setTimeout(() => {
+              window.location.href = '/onboarding';
+            }, 500);
           }
-
-          setSuccess(`Account registered as ${user.email} successfully! Redirecting...`);
           setLoading(false);
-
-          setTimeout(() => {
-            window.location.href = '/dashboard';
-          }, 500);
         }
       } catch (err: any) {
         console.error('Google Redirect Error:', err);

@@ -48,6 +48,11 @@ export default function LoginPage() {
         return;
       }
 
+      // Clear any old session data from previous accounts
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      localStorage.removeItem('onboarding');
+
       // Save auth data
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.user));
@@ -95,6 +100,11 @@ export default function LoginPage() {
           if (!res.ok) {
             throw new Error(data.message || 'Server authentication failed.');
           }
+
+          // Clear any old session data from previous accounts
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+          localStorage.removeItem('onboarding');
 
           localStorage.setItem('token', data.token);
           localStorage.setItem('user', JSON.stringify(data.user));

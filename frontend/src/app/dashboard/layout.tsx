@@ -6,7 +6,8 @@ import Link from 'next/link';
 import {
   Apple, LayoutDashboard, Flame, UtensilsCrossed, Send,
   Dumbbell, Droplets, BarChart2, Settings, LogOut,
-  ChevronLeft, Menu, X, Sun, Moon, Bell, BellOff
+  ChevronLeft, Menu, X, Sun, Moon, Bell, BellOff,
+  ShieldAlert
 } from 'lucide-react';
 import { auth } from '@/lib/firebase';
 import { signOut } from 'firebase/auth';
@@ -21,6 +22,7 @@ const navItems = [
   { label: 'Workout Plans',   icon: Dumbbell,        href: '/dashboard/workout' },
   { label: 'Water Goal',      icon: Droplets,        href: '/dashboard/water' },
   { label: 'Reports',         icon: BarChart2,       href: '/dashboard/reports' },
+  { label: 'Admin Panel',     icon: ShieldAlert,     href: '/dashboard/admin' },
   { label: 'Settings',        icon: Settings,        href: '/dashboard/settings' },
 ];
 
